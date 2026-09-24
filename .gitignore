@@ -1,0 +1,11 @@
+node_modules
+dist
+dev.log
+*.local
+.DS_Store
+
+# Freebuff workspace metadata
+.freebuff/
+
+# Recovered production bundles from the original deployment (reference only)
+_reference/

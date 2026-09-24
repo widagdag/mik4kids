@@ -1,0 +1,17 @@
+{
+  "name": "MIK for Kids — Learn Quran Recitation",
+  "short_name": "MIK for Kids",
+  "description": "A friendly place for children to learn the Quran — surah courses, quizzes, and shared recitations.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
