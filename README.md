@@ -105,10 +105,19 @@ npm run dev           # frontend against the deployment
 
 ## Deploying
 
-The original site was a static SPA on Vercel. `npm run build` produces a
-fully static `dist/`. For SPA routing, rewrites are needed (Vercel handles
-this automatically for Vite projects; on other hosts, rewrite all paths to
-`/index.html`).
+Production runs on **Vercel**: https://mik4kids-gap26.vercel.app —
+project `mik4kids` (team `gap26`), linked to this GitHub repo. Every push
+to `main` auto-deploys; build-time env vars (`VITE_BACKEND=convex`,
+`VITE_CONVEX_URL`) live in the Vercel project settings.
+
+Manual CLI deploy, if you ever need it:
+
+```bash
+npx vercel deploy --prod
+```
+
+`npm run build` produces a fully static `dist/`; `vercel.json` provides the
+SPA rewrites for any static host.
 
 ## Data sources & credits
 
