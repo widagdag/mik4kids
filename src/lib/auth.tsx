@@ -47,7 +47,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await backend.requestEmailOtp(email);
         setPendingEmail(email);
       } else {
-        const u = await backend.verifyEmailOtp(String(code));
+        // The verify form re-submits the email as a hidden input, so the
+        // email survives even if the auth context's pendingEmail is lost.
+        const u = await backend.verifyEmailOtp(
+          String(code),
+          email || (pendingEmail ?? undefined),
+        );
         setUser(u);
         setPendingEmail(null);
       }

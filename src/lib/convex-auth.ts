@@ -68,11 +68,26 @@ export const convexAuth = {
       const user = await getConvexHttpClient().query(api.requireUser.me, {});
       return toAuthUser(user);
     } catch {
+      // Token rejected (e.g. signing key rotated, or session revoked):
+      // drop it so the next sign-in starts clean instead of poisoning
+      // every request with an unverifiable token.
+      writeToken(null);
+      try {
+        getConvexHttpClient().clearAuth();
+      } catch {
+        // client not initialized in this mode
+      }
       return null;
     }
   },
 
   async signInAnonymous(): Promise<AuthUser> {
+    // Never let a stale token ride along on sign-in actions.
+    try {
+      getConvexHttpClient().clearAuth();
+    } catch {
+      // ignore
+    }
     const res = (await getConvexHttpClient().action(api.auth.signIn, {
       provider: "anonymous",
       params: {},
@@ -88,6 +103,11 @@ export const convexAuth = {
 
   async requestEmailOtp(email: string): Promise<void> {
     pendingEmail = email;
+    try {
+      getConvexHttpClient().clearAuth();
+    } catch {
+      // ignore
+    }
     await getConvexHttpClient().action(api.auth.signIn, {
       provider: "email-otp",
       params: { email },
@@ -95,13 +115,17 @@ export const convexAuth = {
     // Success here only means "no immediate error" — the code arrives by email.
   },
 
-  async verifyEmailOtp(code: string): Promise<AuthUser> {
-    if (!pendingEmail) {
+  async verifyEmailOtp(code: string, email?: string): Promise<AuthUser> {
+    // Prefer the explicitly passed email (the Auth page keeps it in React
+    // state) — module-level pendingEmail can be wiped by dev-time hot
+    // reloads, so it is only a fallback.
+    const mail = email || pendingEmail;
+    if (!mail) {
       throw new Error("No email to verify — start the sign-in again.");
     }
     const res = (await getConvexHttpClient().action(api.auth.signIn, {
       provider: "email-otp",
-      params: { email: pendingEmail, code },
+      params: { email: mail, code },
     })) as SignInResult | null;
     const token = res?.tokens?.token;
     if (!token) throw new Error("The verification code you entered is incorrect.");

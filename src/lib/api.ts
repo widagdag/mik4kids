@@ -47,7 +47,7 @@ export interface MikApi {
   getUser(): Promise<AuthUser | null>;
   signInAnonymous(): Promise<AuthUser>;
   requestEmailOtp(email: string): Promise<void>;
-  verifyEmailOtp(code: string): Promise<AuthUser>;
+  verifyEmailOtp(code: string, email?: string): Promise<AuthUser>;
   signOut(): Promise<void>;
   // quran
   listSurahs(): Promise<Surah[]>;
@@ -97,7 +97,7 @@ const convexApi: MikApi = {
   getUser: () => convexAuth.getUser(),
   signInAnonymous: () => convexAuth.signInAnonymous(),
   requestEmailOtp: (email) => convexAuth.requestEmailOtp(email),
-  verifyEmailOtp: (code) => convexAuth.verifyEmailOtp(code),
+  verifyEmailOtp: (code, email) => convexAuth.verifyEmailOtp(code, email),
   signOut: () => convexAuth.signOut(),
 
   async listSurahs() {
@@ -187,7 +187,7 @@ const mockApi: MikApi = {
   getUser: () => mockAuth.getUser(),
   signInAnonymous: () => mockAuth.signInAnonymous(),
   requestEmailOtp: (email) => mockAuth.requestEmailOtp(email),
-  verifyEmailOtp: (code) => mockAuth.verifyEmailOtp(code),
+  verifyEmailOtp: (code, email) => mockAuth.verifyEmailOtp(code, email),
   signOut: () => mockAuth.signOut(),
 
   listSurahs: () => mockSurahs.list(),

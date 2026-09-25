@@ -173,7 +173,7 @@ export const mockAuth = {
     );
   },
 
-  async verifyEmailOtp(code: string): Promise<AuthUser> {
+  async verifyEmailOtp(code: string, _email?: string): Promise<AuthUser> {
     const entry = state.otpCodes[code];
     const email =
       entry?.email ?? (/^\d{6}$/.test(code) ? `learner-${code}@mock.local` : null);

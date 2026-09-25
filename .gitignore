@@ -10,6 +10,9 @@ dev.log
 # Dev server output
 .dev-server.log
 
+# Convex log tails
+.convex-logs.txt
+
 # Convex codegen (regenerate with `npx convex dev`)
 convex/_generated/
 
