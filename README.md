@@ -4,9 +4,11 @@ A calm, friendly space where children learn the Quran surah by surah, quiz
 what they know, and share their own recitations.
 
 This project was **rebuilt from its own production deployment**
-(mik4kids.freebuff.app) after the original source and Convex access were
-lost. Every page, component, design token, and the full backend API contract
-were recovered from the deployed bundles (archived in `_reference/`).
+(mik4kids.freebuff.app) after the original source and backend access were
+lost. Every page, component, design token, and the full API contract were
+recovered from the deployed bundles (archived in `_reference/`) — and a new
+**Convex backend** is now live (see "Convex backend" below), with a
+zero-setup localStorage mock available for offline development.
 
 ## Quick start
 
@@ -50,7 +52,8 @@ src/
   hooks/use-quran.ts   Catalog/surah hooks with auto-seed + retry
   pages/               One file per route
   components/          UI primitives (shadcn-style) + brand + header
-convex-reference/      Reference Convex functions/schema for reconnection
+convex/               Live Convex backend (auth, catalog, progress, content)
+convex-reference/      Original contract recovered from the production bundle
 _reference/            Archived production bundles from the original site
 ```
 
@@ -59,53 +62,46 @@ _reference/            Archived production bundles from the original site
   (recitation by Mishary Rashid Alafasy) — exactly as the original did.
 - Audio in "recordings" is stored as data URLs in mock mode.
 
-## Reconnecting Convex (when you regain access)
+## Convex backend
 
-The original backend was Convex (deployment `small-aardvark-320.convex.cloud`)
-with Convex Auth (`email-otp` + `anonymous` providers). If you can sign in at
-[dashboard.convex.dev](https://dashboard.convex.dev) you may find the original
-project there — its data (users, practiced verses, recordings, comments, quiz
-results) is still stored server-side.
+A live Convex deployment backs the app (guest + email-OTP sign-in via
+Convex Auth, catalog/progress/recordings/comments/quiz data). `.env.local`
+selects it:
 
-To wire this frontend to a Convex deployment:
+```
+VITE_BACKEND=convex
+VITE_CONVEX_URL=https://<deployment>.convex.cloud
+```
 
-1. Install Convex dev dependencies:
+Backend essentials (`convex/`):
 
-   ```bash
-   npm install -D convex @convex-dev/auth
-   ```
+- `auth.ts` — Convex Auth with an `email-otp` provider (6-digit codes via
+  Resend when `RESEND_API_KEY` is set on the deployment, otherwise logged to
+  deployment logs) and the `anonymous` guest provider. JWTs are signed with
+  the deployment's `JWT_PRIVATE_KEY` (PKCS#8 PEM); the matching public set
+  lives in `JWKS`. Both were provisioned with `npx convex env set NAME < file`
+  (stdin, not argv — multiline values break as CLI arguments on Windows).
+- `auth.config.ts` — OIDC provider pointing at the deployment's own
+  `convex.site` URL (hardcoded; update it if you swap deployments).
+- `http.ts` — exposes `/.well-known/jwks.json` + `/api/auth/*`.
+- `surahs.ts` — catalog + progress. Seeds run as **actions** (fetch from
+  api.alquran.cloud) that write through internal mutations, and store verse
+  audio as a flat `audioUrls` array (derivable from the global ayah number)
+  to keep documents small.
+- `content.ts` — recordings (Convex file storage), comments, quiz results.
 
-2. Copy the reference functions into a `convex/` folder:
+Local development loop:
 
-   ```bash
-   cp convex-reference/*.ts convex/
-   ```
+```bash
+npx convex dev        # push functions + regenerate convex/_generated
+npm run dev           # frontend against the deployment
+```
 
-   Adjust imports (the files reference `./_generated/server`, which `npx
-   convex dev` generates). `convex-reference/README.md` documents the
-   complete recovered function contract.
-
-3. Start the dev loop and generate the API:
-
-   ```bash
-   npx convex dev
-   ```
-
-   This creates `convex/_generated/` and syncs the schema. Replace the stub
-   at `src/convex/_generated/api.ts` with the generated one, and set the
-   path alias so `src/lib/api.ts` imports it.
-
-4. Create `.env.local`:
-
-   ```
-   VITE_BACKEND=convex
-   VITE_CONVEX_URL=https://<your-deployment>.convex.cloud
-   ```
-
-5. `npm run dev` — the app now reads/writes the real backend. The auth
-   context currently always uses the mock; swap `mockAuth` calls in
-   `src/lib/api.ts` for the Convex Auth React client (`ConvexAuthProvider`)
-   when you reconnect.
+> The original backend (Convex project `small-aardvark-320`) may still exist
+> if you regain access to its dashboard login — its data (users, practiced
+> verses, recordings, comments, quiz results) would be there. This repo now
+> runs on its own deployment (`optimistic-possum-22`), so nothing depends on
+> the original account.
 
 ## Deploying
 

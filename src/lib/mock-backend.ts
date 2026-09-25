@@ -109,6 +109,16 @@ function subscribe(listener: Listener): () => void {
   return () => listeners.delete(listener);
 }
 
+/** Subscribe to store changes from outside the module (used by useApiQuery). */
+export function subscribeToStore(listener: Listener): () => void {
+  return subscribe(listener);
+}
+
+/** Notify subscribers from outside the store (used by the convex backend after mutations). */
+export function notifyStoreChange(): void {
+  listeners.forEach((l) => l());
+}
+
 function uid(): string {
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
 }
@@ -342,7 +352,7 @@ export const mockContent = {
   },
 
   async saveRecording(input: {
-    storageId: string;
+    storageId?: string;
     title: string;
     description?: string;
     surahNumber?: number;
