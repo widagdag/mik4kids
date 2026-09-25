@@ -13,8 +13,8 @@ dev.log
 # Convex log tails
 .convex-logs.txt
 
-# Convex codegen (regenerate with `npx convex dev`)
-convex/_generated/
+# NOTE: convex/_generated is committed (not ignored) because Vercel builds
+# run `tsc -b` remotely and CLI deploys exclude gitignored files.
 
 # Recovered production bundles from the original deployment (reference only)
 _reference/
