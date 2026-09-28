@@ -11,6 +11,7 @@ import {
 import type { AuthUser } from "./types";
 import { useLocation } from "react-router";
 import { backend, useApiMutation } from "./api";
+import { notifyStoreChange } from "./store-events";
 
 interface AuthContextValue {
   isLoading: boolean;
@@ -51,7 +52,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     bootstrapRef.current ??= getUser()
       .then(setUser)
       .catch(() => setUser(null))
-      .finally(() => setAuthStatus("ready"));
+      .finally(() => {
+        setAuthStatus("ready");
+        // Deep-linked pages may have fired queries before the session check
+        // finished (unauthenticated -> rejected). Nudge them to refetch now
+        // that auth state is settled.
+        notifyStoreChange();
+      });
     return bootstrapRef.current;
   }, [getUser]);
 
