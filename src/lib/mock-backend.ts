@@ -9,6 +9,8 @@ import type {
   Surah,
 } from "./types";
 import fallbackSurahs from "./surah-fallback.json";
+import { notifyStoreChange, subscribeToStore } from "./store-events";
+import type { MikApi } from "./api-types";
 
 /**
  * Local mock backend implementing the exact API contract recovered from the
@@ -16,7 +18,9 @@ import fallbackSurahs from "./surah-fallback.json";
  * app is fully usable offline; see src/lib/api.ts for how this is selected.
  */
 
-type Listener = () => void;
+// Re-exported so legacy imports keep working; both backends now share ONE
+// listener set (src/lib/store-events.ts).
+export { notifyStoreChange, subscribeToStore };
 
 interface StoreState {
   surahs: Surah[];
@@ -89,7 +93,6 @@ function load(): StoreState {
 }
 
 let state: StoreState = typeof localStorage !== "undefined" ? load() : defaultState();
-const listeners = new Set<Listener>();
 
 function persist() {
   try {
@@ -101,22 +104,7 @@ function persist() {
 
 function notify() {
   persist();
-  listeners.forEach((l) => l());
-}
-
-function subscribe(listener: Listener): () => void {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-/** Subscribe to store changes from outside the module (used by useApiQuery). */
-export function subscribeToStore(listener: Listener): () => void {
-  return subscribe(listener);
-}
-
-/** Notify subscribers from outside the store (used by the convex backend after mutations). */
-export function notifyStoreChange(): void {
-  listeners.forEach((l) => l());
+  notifyStoreChange();
 }
 
 function uid(): string {
@@ -466,6 +454,35 @@ export function resetMockData(): void {
   notify();
 }
 
-export function useMockStoreSubscribe(): (cb: () => void) => () => void {
-  return subscribe;
-}
+// ---------------------------------------------------------------------------
+// The mock MikApi implementation
+// ---------------------------------------------------------------------------
+
+export const mockApi: MikApi = {
+  getUser: () => mockAuth.getUser(),
+  signInAnonymous: () => mockAuth.signInAnonymous(),
+  requestEmailOtp: (email) => mockAuth.requestEmailOtp(email),
+  verifyEmailOtp: (code, email) => mockAuth.verifyEmailOtp(code, email),
+  signOut: () => mockAuth.signOut(),
+
+  listSurahs: () => mockSurahs.list(),
+  getSurah: (number) => mockSurahs.getSurah(number),
+  seedSurahList: () => mockSurahs.seedSurahList(),
+  seedSurah: (args) => mockSurahs.seedSurah(args),
+
+  listPracticed: () => mockProgress.list(),
+  togglePracticed: (args) => mockProgress.toggle(args),
+
+  myRecordings: () => mockContent.myRecordings(),
+  courseRecordings: (args) => mockContent.courseRecordings(args),
+  generateUploadUrl: () => mockContent.generateUploadUrl(),
+  saveRecording: (input) => mockContent.saveRecording(input),
+  deleteRecording: (args) => mockContent.deleteRecording(args),
+
+  listComments: (args) => mockComments.list(args),
+  addComment: (args) => mockComments.addComment(args),
+
+  quizBest: (args) => mockQuizzes.best(args),
+  quizSummary: () => mockQuizzes.summary(),
+  saveQuizResult: (args) => mockQuizzes.save(args),
+};

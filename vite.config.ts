@@ -14,4 +14,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Production sourcemaps keep Lighthouse's "valid-source-maps" audit
+    // happy and make production errors debuggable.
+    sourcemap: true,
+  },
 });

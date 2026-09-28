@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
 import { Link } from "react-router";
 
 import { BrandLogo } from "@/components/brand";
+import { Reveal } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star } from "lucide-react";
 
@@ -32,13 +32,6 @@ const FEATURED_SURAHS = [
   { number: 103, arabic: "العصر", english: "Al-Asr", meaning: "The Time", ayahs: 3 },
 ];
 
-const reveal = {
-  initial: { opacity: 0, y: 16 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-80px" },
-  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
-};
-
 export default function Landing() {
   return (
     <div className="min-h-screen bg-white text-neutral-950 antialiased">
@@ -56,7 +49,7 @@ export default function Landing() {
       </header>
 
       <section className="mx-auto max-w-5xl px-6 pb-24 pt-20 text-center sm:pt-28">
-        <motion.div {...reveal}>
+        <Reveal>
           <p dir="rtl" className="font-arabic text-2xl leading-relaxed text-neutral-800 sm:text-[1.75rem]">
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </p>
@@ -84,23 +77,20 @@ export default function Landing() {
           <p className="mt-10 text-xs uppercase tracking-[0.2em] text-neutral-400">
             Al-Fatiha &amp; Juz Amma · 38 surah courses · Recited by Mishary Alafasy
           </p>
-        </motion.div>
+        </Reveal>
       </section>
 
       <section className="border-t border-neutral-200">
         <div className="mx-auto max-w-5xl px-6 py-24">
-          <motion.div {...reveal}>
+          <Reveal>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-neutral-400">
               How it works
             </p>
             <h2 className="mt-4 max-w-xl text-3xl font-semibold tracking-tight sm:text-4xl">
               Learning, in three gentle steps.
             </h2>
-          </motion.div>
-          <motion.div
-            {...reveal}
-            className="mt-14 grid gap-x-12 gap-y-12 sm:grid-cols-3"
-          >
+          </Reveal>
+          <Reveal className="mt-14 grid gap-x-12 gap-y-12 sm:grid-cols-3">
             {STEPS.map((step) => (
               <div key={step.n} className="border-t border-neutral-200 pt-6">
                 <span className="text-4xl font-light tabular-nums text-neutral-300">
@@ -110,13 +100,13 @@ export default function Landing() {
                 <p className="mt-2 text-sm leading-6 text-neutral-500">{step.body}</p>
               </div>
             ))}
-          </motion.div>
+          </Reveal>
         </div>
       </section>
 
       <section id="surahs" className="border-t border-neutral-200">
         <div className="mx-auto max-w-5xl px-6 py-24">
-          <motion.div {...reveal}>
+          <Reveal>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-neutral-400">
               The catalog
             </p>
@@ -127,8 +117,8 @@ export default function Landing() {
               The catalog opens with Al-Fatiha and the whole of Juz Amma — the
               surahs every young learner begins with.
             </p>
-          </motion.div>
-          <motion.div {...reveal} className="mt-12">
+          </Reveal>
+          <Reveal className="mt-12">
             {FEATURED_SURAHS.map((s) => (
               <Link
                 key={s.number}
@@ -154,13 +144,13 @@ export default function Landing() {
               <span className="text-sm font-medium">Browse and search the full catalog</span>
               <ArrowRight className="size-4 text-neutral-300 transition-transform group-hover:translate-x-0.5 group-hover:text-neutral-950" />
             </Link>
-          </motion.div>
+          </Reveal>
         </div>
       </section>
 
       <section className="border-t border-neutral-200">
         <div className="mx-auto grid max-w-5xl gap-px bg-neutral-200 sm:grid-cols-2">
-          <motion.div {...reveal} className="bg-white p-10 sm:p-14">
+          <Reveal className="bg-white p-10 sm:p-14">
             <Star className="size-5 text-amber-600" />
             <h2 className="mt-5 text-2xl font-semibold tracking-tight sm:text-3xl">
               A short quiz for every surah.
@@ -169,8 +159,8 @@ export default function Landing() {
               Five gentle questions after every course — a small celebration of
               what's been learned, with a best score to beat.
             </p>
-          </motion.div>
-          <motion.div {...reveal} className="bg-white p-10 sm:p-14">
+          </Reveal>
+          <Reveal className="bg-white p-10 sm:p-14">
             <Star className="size-5 text-amber-600" />
             <h2 className="mt-5 text-2xl font-semibold tracking-tight sm:text-3xl">
               A voice of their own.
@@ -180,13 +170,13 @@ export default function Landing() {
               and comment on what they're learning — a small, safe corner of the
               internet made just for them.
             </p>
-          </motion.div>
+          </Reveal>
         </div>
       </section>
 
       <section className="border-t border-neutral-200">
         <div className="mx-auto max-w-5xl px-6 py-24">
-          <motion.div {...reveal} className="max-w-2xl">
+          <Reveal className="max-w-2xl">
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-neutral-400">
               Made for families
             </p>
@@ -198,13 +188,13 @@ export default function Landing() {
               quiz. Parents can open the same dashboard and see every verse
               learned, every quiz taken, and every recitation shared.
             </p>
-          </motion.div>
+          </Reveal>
         </div>
       </section>
 
       <section className="border-t border-neutral-200">
         <div className="mx-auto max-w-5xl px-6 py-24 text-center">
-          <motion.div {...reveal}>
+          <Reveal>
             <p dir="rtl" className="font-arabic text-3xl text-neutral-900 sm:text-4xl">
               الْفَاتِحَة
             </p>
@@ -220,7 +210,7 @@ export default function Landing() {
                 Start learning <ArrowRight className="size-4" />
               </Link>
             </Button>
-          </motion.div>
+          </Reveal>
         </div>
       </section>
 

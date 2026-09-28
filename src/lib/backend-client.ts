@@ -1,12 +1,7 @@
 import { ConvexHttpClient } from "convex/browser";
-import { ConvexReactClient } from "convex/react";
+import { backendKind, convexUrl } from "./backend-mode";
 
-export type BackendMode = "mock" | "convex";
-
-export const backendKind: BackendMode =
-  (import.meta.env.VITE_BACKEND as BackendMode | undefined) ?? "mock";
-
-export const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
+export { backendKind, convexUrl, type BackendMode } from "./backend-mode";
 
 let httpClient: ConvexHttpClient | null = null;
 
@@ -29,15 +24,4 @@ export function getConvexHttpClient(): ConvexHttpClient {
     }
   }
   return httpClient;
-}
-
-let reactClient: ConvexReactClient | null = null;
-
-/** Lazy singleton React client (available if we later switch to useQuery). */
-export function getConvexReactClient(): ConvexReactClient {
-  if (!convexUrl) {
-    throw new Error("VITE_CONVEX_URL is required in convex mode");
-  }
-  if (!reactClient) reactClient = new ConvexReactClient(convexUrl);
-  return reactClient;
 }
