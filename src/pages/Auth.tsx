@@ -239,7 +239,7 @@ export default function AuthPage() {
                 </form>
               </>
             )}
-            <div className="rounded-b-lg border-t bg-muted px-6 py-4 text-center text-xs text-muted-foreground">
+            <div className="rounded-b-lg border-t bg-muted px-6 py-4 text-center text-xs text-neutral-600">
               Secured by{" "}
               <a
                 href="https://freebuff.com"
