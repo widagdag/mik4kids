@@ -47,6 +47,7 @@ export function AppHeader({ current }: { current?: string }) {
             variant="ghost"
             size="sm"
             className="gap-1.5 text-neutral-600"
+            aria-label="Sign out"
             onClick={handleSignOut}
           >
             <LogOut className="size-4" />
