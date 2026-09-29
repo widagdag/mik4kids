@@ -125,7 +125,13 @@ export default function AuthPage() {
                           required
                         />
                       </div>
-                      <Button type="submit" variant="outline" size="icon" disabled={submitting}>
+                      <Button
+                        type="submit"
+                        variant="outline"
+                        size="icon"
+                        aria-label="Send sign-in code"
+                        disabled={submitting}
+                      >
                         {submitting ? (
                           <Spinner className="h-4 w-4" />
                         ) : (
